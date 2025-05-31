@@ -1,0 +1,288 @@
+API Documentation
+================
+
+AUTHENTICATION
+-------------
+
+1. Login and Get JWT Token
+-------------------------
+Login with email:
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "your_password"
+  }'
+
+Login with mobile number:
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "mobile_number": "+1234567890",
+    "password": "your_password"
+  }'
+
+
+Response:              
+{"access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4NjQ1MDgzLCJpYXQiOjE3NDg2NDE0ODMsImp0aSI6Ijc0NWE3ZDRjOGNhODRiZmNhMTdlYzRmYjBkMWZmZWUzIiwidXNlcl9pZCI6MSwiZnVsbF9uYW1lIjoiQWRtaW4iLCJtb2JpbGVfbnVtYmVyIjoiNjIwNTgyOTM3NiIsInJvbGUiOm51bGx9.O_rk-0Gw0W_h1uAqRwkZXwTofrAdQu9pI90uP7t3ZY0","refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0ODcyNzg4MywiaWF0IjoxNzQ4NjQxNDgzLCJqdGkiOiJhNzM5YTBlOTU2ZWY0ZDllODUwZmNhNWUzMGY0ZWNmYiIsInVzZXJfaWQiOjEsImZ1bGxfbmFtZSI6IkFkbWluIiwibW9iaWxlX251bWJlciI6IjYyMDU4MjkzNzYiLCJyb2xlIjpudWxsfQ.D_Fy8JAeUsELxdcvaWKaCIXwgWS71JPU5qQfFG2AasM","user":{"id":1,"full_name":"Admin","mobile_number":"6205829376","email":null,"joining_date":"2000-01-01","salary":"0.00","address":"N/A","dob":"2000-01-01","role":null,"documents":null,"bank_account":{},"emergency_contact":null,"profile_image":null}}     
+
+2. Refresh JWT Token
+-------------------
+curl -X POST http://localhost:8000/api/token/refresh/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refresh": "your_refresh_token"
+  }'
+
+3. Forgot Password
+-----------------
+curl -X POST http://localhost:8000/api/auth/forgot-password/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com"
+  }'
+
+
+
+USER MANAGEMENT
+--------------
+
+1. Get User Profile
+------------------
+curl -X GET http://localhost:8000/api/profile/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response:
+{
+    "id": 1,
+    "full_name": "John Doe",
+    "mobile_number": "+1234567890",
+    "email": "john@example.com",
+    "joining_date": "2024-01-01",
+    "salary": "5000.00",
+    "address": "123 Main St",
+    "dob": "1990-01-01",
+    "role": {
+        "id": 1,
+        "name": "Employee"
+    },
+    "documents": null,
+    "bank_account": {
+        "account_number": "1234567890",
+        "bank_name": "Example Bank"
+    },
+    "emergency_contact": "+1987654321",
+    "profile_image": null
+}
+
+2. Update User Profile
+---------------------
+curl -X PATCH http://localhost:8000/api/profile/ \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "full_name": "John Doe",
+    "mobile_number": "+1234567890",
+    "email": "john@example.com",
+    "address": "456 New St",
+    "emergency_contact": "+1987654321"
+  }'
+
+Response: Updated user profile data
+
+3. List All Users (Admin only)
+-----------------------------
+curl -X GET http://localhost:8000/api/users/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response:
+[
+    {
+        "id": 1,
+        "full_name": "John Doe",
+        "mobile_number": "+1234567890",
+        "email": "john@example.com",
+        ...
+    },
+    ...
+]
+
+4. Get Specific User (Admin or Self)
+----------------------------------
+curl -X GET http://localhost:8000/api/users/{user_id}/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response: User profile data
+
+5. Update Specific User (Admin or Self)
+-------------------------------------
+curl -X PATCH http://localhost:8000/api/users/{user_id}/ \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "full_name": "John Doe",
+    "mobile_number": "+1234567890",
+    "email": "john@example.com",
+    "joining_date": "2024-01-01",
+    "salary": "5000.00",
+    "address": "123 Main St",
+    "dob": "1990-01-01",
+    "role": 1,
+    "bank_account": {
+        "account_number": "1234567890",
+        "bank_name": "Example Bank"
+    },
+    "emergency_contact": "+1987654321"
+  }'
+
+Response: Updated user profile data
+
+6. Delete User (Admin only)
+-------------------------
+curl -X DELETE http://localhost:8000/api/users/{user_id}/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response:
+{
+    "message": "User successfully deleted"
+}
+
+GROUP MANAGEMENT (Admin only)
+---------------------------
+
+1. List All Groups
+----------------
+curl -X GET http://localhost:8000/api/groups/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response:
+[
+    {
+        "id": 1,
+        "name": "Admin"
+    },
+    {
+        "id": 2,
+        "name": "Employee"
+    }
+]
+
+2. Create Group
+-------------
+curl -X POST http://localhost:8000/api/groups/ \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "New Group"
+  }'
+
+Response: Created group data
+
+3. Get Specific Group
+-------------------
+curl -X GET http://localhost:8000/api/groups/{group_id}/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response: Group data
+
+4. Update Group
+-------------
+curl -X PATCH http://localhost:8000/api/groups/{group_id}/ \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Group Name"
+  }'
+
+Response: Updated group data
+
+5. Delete Group
+-------------
+curl -X DELETE http://localhost:8000/api/groups/{group_id}/ \
+  -H "Authorization: Bearer your_access_token"
+
+Response:
+{
+    "message": "Group successfully deleted"
+}
+
+Error Responses
+-------------
+All endpoints may return the following error responses:
+
+1. Authentication Error (401):
+{
+    "detail": "Authentication credentials were not provided."
+}
+
+2. Permission Error (403):
+{
+    "detail": "You do not have permission to perform this action."
+}
+
+3. Not Found Error (404):
+{
+    "error": "User not found"
+}
+
+4. Validation Error (400):
+{
+    "error": "Invalid input data"
+}
+
+Note: Replace 'your_access_token' with the actual JWT token received from the login endpoint
+
+
+
+PLOT MANAGEMENT
+--------------
+
+1. Add New Plot
+-------------
+curl -X POST http://localhost:8000/api/plots/add \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plot_name": "Plot Name",
+    "plot_location": "Plot Location",
+    "plot_size": "100.5"
+  }'
+
+2. Edit Plot
+----------
+curl -X PUT http://localhost:8000/api/plots/{plot_id} \
+  -H "Authorization: Bearer your_access_token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "plot_name": "Updated Plot Name",
+    "plot_location": "Updated Location",
+    "plot_size": "150.5"
+  }'
+
+3. Delete Plot
+------------
+curl -X DELETE http://localhost:8000/api/plots/{plot_id}/delete \
+  -H "Authorization: Bearer your_access_token"
+
+4. List All Plots
+---------------
+curl -X GET http://localhost:8000/api/plots \
+  -H "Authorization: Bearer your_access_token"
+
+
+
+Note: All plot management endpoints require authentication.
+
+IMPORTANT NOTES
+--------------
+1. Replace 'your_access_token' with the actual JWT token received from the login endpoint
+2. Replace 'your_refresh_token' with the refresh token received from the login endpoint
+3. Replace {user_id} and {group_id} with actual IDs
+4. The base URL (http://localhost:8000/api/) should be adjusted according to your deployment
+5. All endpoints except login and forgot-password require authentication
+6. Some endpoints are restricted to admin users only
+
+
+
+
+
